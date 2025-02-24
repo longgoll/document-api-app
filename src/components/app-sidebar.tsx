@@ -36,10 +36,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Installation",
             url: "#",
+            method: "GET", // Add method property
           },
           {
             title: "Project Structure",
             url: "#",
+            method: "GET", // Add method property
           },
         ],
       },
