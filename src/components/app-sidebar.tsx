@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
+import { v4 as uuidv4 } from "uuid"; // Import uuid
 
 import { SearchForm } from "@/components/search-form";
 import { VersionSwitcher } from "@/components/version-switcher";
@@ -21,164 +22,96 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-// This is sample data.
-const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
-  navMain: [
-    {
-      title: "Getting Started",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Building Your Application",
-      url: "#",
-      items: [
-        {
-          title: "Routing",
-          url: "#",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "API Reference",
-      url: "#",
-      items: [
-        {
-          title: "Components",
-          url: "#",
-        },
-        {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-          method: "DELETE",
-        },
-        {
-          title: "Turbopack",
-          url: "#",
-          method: "GET",
-        },
-      ],
-    },
-    {
-      title: "Community",
-      url: "#",
-      items: [
-        {
-          title: "Contribution Guide",
-          url: "#",
-          method: "POST",
-        },
-      ],
-    },
-  ],
-};
+// Import JSON file
+import medusaOpenApi from "../../docs/Medusa.openapi.json";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [dataNav, setDataNav] = React.useState({
+    versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
+    navMain: [
+      {
+        title: "Getting Started",
+        url: "#",
+        items: [
+          {
+            title: "Installation",
+            url: "#",
+          },
+          {
+            title: "Project Structure",
+            url: "#",
+          },
+        ],
+      },
+    ],
+  });
+
+  React.useEffect(() => {
+    // Extract tags and paths from the OpenAPI JSON
+    const paths = medusaOpenApi.paths;
+
+    // Create a map to group paths by their tags
+    const tagMap = new Map();
+
+    Object.entries(paths).forEach(([, methods]) => {
+      const methodEntries = methods as Record<
+        string,
+        { tags: string[]; summary: string; operationId: string }
+      >;
+      const firstMethod = methodEntries[Object.keys(methodEntries)[0]];
+      if (firstMethod && firstMethod.tags && firstMethod.tags.length > 0) {
+        const tag = firstMethod.tags[0];
+        const shortTag = tag.split("/").pop(); // Get the last part of the tag
+
+        if (!tagMap.has(shortTag)) {
+          tagMap.set(shortTag, []);
+        }
+
+        const items = Object.entries(methodEntries).map(
+          ([method, operation]) => {
+            const uuid = uuidv4();
+            return {
+              id: uuid, // Generate a unique ID for each item
+              title: operation.summary,
+              url: `#${operation.operationId}-${uuid}`,
+              method: method.toUpperCase(),
+              operationId: operation.operationId,
+            };
+          }
+        );
+
+        tagMap.get(shortTag).push(...items);
+      }
+    });
+
+    // Create a navigation structure based on the tag map
+    const navMain = Array.from(tagMap.entries()).map(([tag, items]) => {
+      return {
+        title: tag,
+        url: "#",
+        items,
+      };
+    });
+
+    // Update the state with the new navigation structure
+    setDataNav((prevState) => ({
+      ...prevState,
+      navMain,
+    }));
+  }, []);
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <VersionSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
+          versions={dataNav.versions}
+          defaultVersion={dataNav.versions[0]}
         />
         <SearchForm />
       </SidebarHeader>
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
+        {dataNav.navMain.map((item) => (
           <Collapsible
             key={item.title}
             title={item.title}
@@ -198,38 +131,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <CollapsibleContent>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {item.items.map((item) => (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={"isActive" in item ? item.isActive : false}
-                        >
+                    {item.items.map((subItem) => (
+                      <SidebarMenuItem key={subItem.id}>
+                        <SidebarMenuButton asChild isActive={false}>
                           <a
-                            href={item.url}
-                            className="flex justify-between items-center"
+                            href={subItem.url}
+                            className="flex justify-between items-center px-4 py-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
                           >
-                            <span>{item.title}</span>
+                            <span>{subItem.title}</span>
                             <span
                               className={
-                                "method" in item
-                                  ? item.method === "GET"
-                                    ? "text-[#007F31]"
-                                    : item.method === "POST"
-                                    ? "text-[#AD7A03]"
-                                    : item.method === "PUT"
-                                    ? "text-[#0053B8]"
-                                    : item.method === "PATCH"
-                                    ? "text-[#623497]"
-                                    : item.method === "DELETE"
-                                    ? "text-[#8E1A10]"
-                                    : item.method === "HEAD"
-                                    ? "text-[#007F31]"
-                                    : item.method === "OPTIONS"
-                                    ? "text-[#A61468]" : ""
+                                subItem.method === "GET"
+                                  ? "text-[#007F31] text-sm"
+                                  : subItem.method === "POST"
+                                  ? "text-[#AD7A03] text-sm"
+                                  : subItem.method === "PUT"
+                                  ? "text-[#0053B8] text-sm"
+                                  : subItem.method === "PATCH"
+                                  ? "text-[#623497] text-sm"
+                                  : subItem.method === "DELETE"
+                                  ? "text-[#8E1A10] text-sm"
+                                  : subItem.method === "HEAD"
+                                  ? "text-[#007F31] text-sm"
+                                  : subItem.method === "OPTIONS"
+                                  ? "text-[#A61468] text-sm"
                                   : ""
                               }
                             >
-                              {"method" in item ? item.method : null}
+                              {subItem.method}
                             </span>
                           </a>
                         </SidebarMenuButton>
