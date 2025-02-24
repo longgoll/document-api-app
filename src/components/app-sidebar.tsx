@@ -34,11 +34,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "#",
         items: [
           {
+            id: "1",
             title: "Installation",
             url: "#",
             method: "GET", // Add method property
           },
           {
+            "id": "2",
             title: "Project Structure",
             url: "#",
             method: "GET", // Add method property
