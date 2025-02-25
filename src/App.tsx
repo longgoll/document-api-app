@@ -4,6 +4,10 @@ import About from '@/pages/About/About'
 import NotFound from '@/pages/NotFound/NotFound'
 
 function App() {
+
+  
+  
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />

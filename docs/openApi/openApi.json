@@ -1,0 +1,547 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Medusa",
+        "description": "",
+        "version": "1.0.0"
+    },
+    "tags": [
+        {
+            "name": "Store API"
+        },
+        {
+            "name": "Store API/Auth"
+        },
+        {
+            "name": "Store API/Carts"
+        }
+    ],
+    "paths": {
+        "/store/token": {
+            "post": {
+                "summary": "Customer Login (JWT)",
+                "deprecated": false,
+                "description": "After a successful login, a JWT token is returned for subsequent authorization.",
+                "operationId": "PostToken",
+                "tags": [
+                    "Store API/Auth",
+                    "Auth"
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "description": "The User's email."
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "description": "The User's password."
+                                    }
+                                }
+                            },
+                            "example": ""
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StoreBearerAuthRes"
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Error1"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/MultipleErrors8"
+                                        }
+                                    ]
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Not Allowed Error",
+                                        "value": {
+                                            "message": "Discount must be set to dynamic",
+                                            "type": "not_allowed"
+                                        }
+                                    },
+                                    "2": {
+                                        "summary": "Invalid Data Error",
+                                        "value": {
+                                            "message": "first_name must be a string",
+                                            "type": "invalid_data"
+                                        }
+                                    },
+                                    "3": {
+                                        "summary": "Multiple Errors",
+                                        "value": {
+                                            "message": "Provided request body contains errors. Please check the data and retry the request",
+                                            "errors": [
+                                                {
+                                                    "message": "first_name must be a string",
+                                                    "type": "invalid_data"
+                                                },
+                                                {
+                                                    "message": "Discount must be set to dynamic",
+                                                    "type": "not_allowed"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "成功示例",
+                                        "value": {
+                                            "message": "Entity with id 1 was not found",
+                                            "type": "not_found"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "409": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "成功示例",
+                                        "value": {
+                                            "code": "unknown_error",
+                                            "message": "The request conflicted with another request. You may retry the request with the provided Idempotency-Key.",
+                                            "type": "QueryRunnerAlreadyReleasedError"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "成功示例",
+                                        "value": {
+                                            "code": "invalid_request_error",
+                                            "message": "Discount with code TEST already exists.",
+                                            "type": "duplicate_error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Invalid Argument Error",
+                                        "value": {
+                                            "message": "cart.total must be defined",
+                                            "type": "unexpected_state"
+                                        }
+                                    },
+                                    "2": {
+                                        "summary": "Default Error",
+                                        "value": {
+                                            "code": "unknown_error",
+                                            "message": "An unknown error occurred.",
+                                            "type": "unknown_error"
+                                        }
+                                    },
+                                    "3": {
+                                        "summary": "Database Error",
+                                        "value": {
+                                            "code": "api_error",
+                                            "message": "An error occured while hashing password",
+                                            "type": "database_error"
+                                        }
+                                    },
+                                    "4": {
+                                        "summary": "Unexpected State Error",
+                                        "value": {
+                                            "message": "cart.total must be defined",
+                                            "type": "unexpected_state"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    }
+                },
+                "security": []
+            }
+        },
+        "/store/auth/token": {
+            "post": {
+                "summary": "Customer Login (JWT)",
+                "deprecated": false,
+                "description": "After a successful login, a JWT token is returned, which can be used to send authenticated requests.",
+                "operationId": "PostToken",
+                "tags": [
+                    "Store API/Auth",
+                    "Auth"
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePostAuthReq"
+                            },
+                            "example": ""
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StoreBearerAuthRes"
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Error1"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/MultipleErrors8"
+                                        }
+                                    ]
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Invalid Data Error",
+                                        "value": {
+                                            "message": "first_name must be a string",
+                                            "type": "invalid_data"
+                                        }
+                                    },
+                                    "2": {
+                                        "summary": "Not Allowed Error",
+                                        "value": {
+                                            "message": "Discount must be set to dynamic",
+                                            "type": "not_allowed"
+                                        }
+                                    },
+                                    "3": {
+                                        "summary": "Multiple Errors",
+                                        "value": {
+                                            "message": "Provided request body contains errors. Please check the data and retry the request",
+                                            "errors": [
+                                                {
+                                                    "message": "first_name must be a string",
+                                                    "type": "invalid_data"
+                                                },
+                                                {
+                                                    "message": "Discount must be set to dynamic",
+                                                    "type": "not_allowed"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Success",
+                                        "value": {
+                                            "message": "Entity with id 1 was not found",
+                                            "type": "not_found"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "409": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Success",
+                                        "value": {
+                                            "code": "unknown_error",
+                                            "message": "The request conflicted with another request. You may retry the request with the provided Idempotency-Key.",
+                                            "type": "QueryRunnerAlreadyReleasedError"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "422": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Success",
+                                        "value": {
+                                            "code": "invalid_request_error",
+                                            "message": "Discount with code TEST already exists.",
+                                            "type": "duplicate_error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                "examples": {
+                                    "1": {
+                                        "summary": "Default Error",
+                                        "value": {
+                                            "code": "unknown_error",
+                                            "message": "An unknown error occurred.",
+                                            "type": "unknown_error"
+                                        }
+                                    },
+                                    "2": {
+                                        "summary": "Unexpected State Error",
+                                        "value": {
+                                            "message": "cart.total must be defined",
+                                            "type": "unexpected_state"
+                                        }
+                                    },
+                                    "3": {
+                                        "summary": "Invalid Argument Error",
+                                        "value": {
+                                            "message": "cart.total must be defined",
+                                            "type": "unexpected_state"
+                                        }
+                                    },
+                                    "4": {
+                                        "summary": "Database Error",
+                                        "value": {
+                                            "code": "api_error",
+                                            "message": "An error occured while hashing password",
+                                            "type": "database_error"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "headers": {}
+                    }
+                },
+                "security": []
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "StoreBearerAuthRes": {
+                "type": "object",
+                "description": "The access token details.",
+                "properties": {
+                    "access_token": {
+                        "description": "Access token that can be used to send authenticated requests.",
+                        "type": "string"
+                    }
+                }
+            },
+            "Error1": {
+                "title": "Response Error",
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "Description of the error that occurred.",
+                        "examples": [
+                            "first_name must be a string"
+                        ]
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "A slug code to indicate the type of the error.",
+                        "enum": [
+                            "invalid_state_error",
+                            "invalid_request_error",
+                            "api_error",
+                            "unknown_error"
+                        ]
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "A slug indicating the type of the error.",
+                        "enum": [
+                            "QueryRunnerAlreadyReleasedError",
+                            "TransactionAlreadyStartedError",
+                            "TransactionNotStartedError",
+                            "conflict",
+                            "unauthorized",
+                            "payment_authorization_error",
+                            "duplicate_error",
+                            "not_allowed",
+                            "invalid_data",
+                            "not_found",
+                            "database_error",
+                            "unexpected_state",
+                            "invalid_argument",
+                            "unknown_error"
+                        ]
+                    }
+                }
+            },
+            "MultipleErrors8": {
+                "title": "Multiple Errors",
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "default": "Provided request body contains errors. Please check the data and retry the request"
+                    },
+                    "errors": {
+                        "type": "array",
+                        "description": "Array of errors",
+                        "items": {
+                            "$ref": "#/components/schemas/Error1"
+                        }
+                    }
+                }
+            }
+        },
+        "StoreReturnsRes": {
+            "type": "object",
+            "description": "The return's details.",
+            "required": [
+                "return"
+            ],
+            "x-expanded-relations": {
+                "field": "return",
+                "relations": [
+                    "items",
+                    "items.reason"
+                ],
+                "eager": [
+                    "items"
+                ]
+            },
+            "properties": {
+                "return": {
+                    "$ref": "#/components/schemas/Return51"
+                }
+            }
+        },
+        "securitySchemes": {}
+    },
+    "servers": [
+        {
+            "url": "https://api.medusa-commerce.com",
+            "description": "Production Env"
+        }
+    ],
+    "security": []
+}

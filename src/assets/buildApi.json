@@ -1,0 +1,200 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Medusa",
+        "description": "",
+        "version": "1.0.0"
+    },
+    "paths": [
+        {
+            "id": "e471bedb-afc6-4e31-bfd7-4c9c5964fb68",
+            "path": "/store/token",
+            "method": "post",
+            "summary": "Customer Login (JWT)",
+            "deprecated": false,
+            "description": "After a successful login, a JWT token is returned for subsequent authorization.",
+            "operationId": "PostToken",
+            "tags": [
+                "Store API/Auth",
+                "Auth"
+            ],
+            "parameters": [],
+            "requestBody": {
+                "contentType": "application/json",
+                "schema": {
+                    "type": "object",
+                    "required": [
+                        "email",
+                        "password"
+                    ],
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "description": "The User's email."
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "The User's password."
+                        }
+                    }
+                },
+                "example": ""
+            },
+            "responses": [
+                {
+                    "statusCode": 200,
+                    "description": "",
+                    "content": {
+                        "contentType": "application/json",
+                        "schema": {
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/Error1"
+                                },
+                                {
+                                    "$ref": "#/components/schemas/MultipleErrors8"
+                                }
+                            ]
+                        }
+                    },
+                    "examples": [
+                        {
+                            "summary": "Not Allowed Error",
+                            "value": {
+                                "message": "Discount must be set to dynamic",
+                                "type": "not_allowed"
+                            }
+                        },
+                        {
+                            "summary": "Invalid Data Error",
+                            "value": {
+                                "message": "first_name must be a string",
+                                "type": "invalid_data"
+                            }
+                        },
+                        {
+                            "summary": "Multiple Errors",
+                            "value": {
+                                "message": "Provided request body contains errors. Please check the data and retry the request",
+                                "errors": [
+                                    {
+                                        "message": "first_name must be a string",
+                                        "type": "invalid_data"
+                                    },
+                                    {
+                                        "message": "Discount must be set to dynamic",
+                                        "type": "not_allowed"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "components": {
+        "schemas": {
+            "StoreBearerAuthRes": {
+                "type": "object",
+                "description": "The access token details.",
+                "properties": {
+                    "access_token": {
+                        "description": "Access token that can be used to send authenticated requests.",
+                        "type": "string"
+                    }
+                }
+            },
+            "Error1": {
+                "title": "Response Error",
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "description": "Description of the error that occurred.",
+                        "examples": [
+                            "first_name must be a string"
+                        ]
+                    },
+                    "code": {
+                        "type": "string",
+                        "description": "A slug code to indicate the type of the error.",
+                        "enum": [
+                            "invalid_state_error",
+                            "invalid_request_error",
+                            "api_error",
+                            "unknown_error"
+                        ]
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "A slug indicating the type of the error.",
+                        "enum": [
+                            "QueryRunnerAlreadyReleasedError",
+                            "TransactionAlreadyStartedError",
+                            "TransactionNotStartedError",
+                            "conflict",
+                            "unauthorized",
+                            "payment_authorization_error",
+                            "duplicate_error",
+                            "not_allowed",
+                            "invalid_data",
+                            "not_found",
+                            "database_error",
+                            "unexpected_state",
+                            "invalid_argument",
+                            "unknown_error"
+                        ]
+                    }
+                }
+            },
+            "MultipleErrors8": {
+                "title": "Multiple Errors",
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "default": "Provided request body contains errors. Please check the data and retry the request"
+                    },
+                    "errors": {
+                        "type": "array",
+                        "description": "Array of errors",
+                        "items": {
+                            "$ref": "#/components/schemas/Error1"
+                        }
+                    }
+                }
+            }
+        },
+        "StoreReturnsRes": {
+            "type": "object",
+            "description": "The return's details.",
+            "required": [
+                "return"
+            ],
+            "x-expanded-relations": {
+                "field": "return",
+                "relations": [
+                    "items",
+                    "items.reason"
+                ],
+                "eager": [
+                    "items"
+                ]
+            },
+            "properties": {
+                "return": {
+                    "$ref": "#/components/schemas/Return51"
+                }
+            }
+        },
+        "securitySchemes": {}
+    },
+    "servers": [
+        {
+            "url": "https://api.medusa-commerce.com",
+            "description": "Production Env"
+        }
+    ],
+    "security": []
+}
