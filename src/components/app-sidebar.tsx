@@ -1,7 +1,6 @@
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
-import { v4 as uuidv4 } from "uuid"; // Import uuid
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link, useNavigate } from "react-router-dom";
 
 import { SearchForm } from "@/components/search-form";
 import { VersionSwitcher } from "@/components/version-switcher";
@@ -27,6 +26,7 @@ import {
 import medusaOpenApi from "../../docs/openApi/openapi.json";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const navigate = useNavigate();
   const [dataNav, setDataNav] = React.useState({
     versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
     navMain: [
@@ -38,13 +38,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             id: "1",
             title: "Installation",
             url: "?page=installation",
-            method: "GET", // Add method property
+            method: "GET",
           },
           {
             id: "2",
             title: "Project Structure",
             url: "?page=project-structure",
-            method: "GET", // Add method property
+            method: "GET",
           },
         ],
       },
@@ -58,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // Create a map to group paths by their tags
     const tagMap = new Map();
 
-    Object.entries(paths).forEach(([, methods]) => {
+    Object.entries(paths).forEach(([path, methods]) => {
       const methodEntries = methods as Record<
         string,
         { tags: string[]; summary: string; operationId: string }
@@ -74,11 +74,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         const items = Object.entries(methodEntries).map(
           ([method, operation]) => {
-            const uuid = uuidv4();
             return {
-              id: uuid, // Generate a unique ID for each item
+              id: path, // Use the path as the unique ID for each item
               title: operation.summary,
-              url: `?api=${uuid}`,
+              url: `?api=${path}`,
               method: method.toUpperCase(),
               operationId: operation.operationId,
             };
@@ -115,7 +114,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SearchForm />
       </SidebarHeader>
       <SidebarContent className="gap-0">
-        {/* We create a collapsible SidebarGroup for each parent. */}
         {dataNav.navMain.map((item) => (
           <Collapsible
             key={item.title}
@@ -138,7 +136,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenu>
                     {item.items.map((subItem) => (
                       <SidebarMenuItem key={subItem.id}>
-                        <SidebarMenuButton asChild isActive={false}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={false}
+                          onClick={() => navigate(subItem.url)}
+                        >
                           <Link
                             to={subItem.url}
                             className="flex justify-between items-center px-4 py-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
