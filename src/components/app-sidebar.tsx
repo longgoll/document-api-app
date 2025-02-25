@@ -37,13 +37,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             id: "1",
             title: "Installation",
-            url: "#",
+            url: "?page=installation",
             method: "GET", // Add method property
           },
           {
             id: "2",
             title: "Project Structure",
-            url: "#",
+            url: "?page=project-structure",
             method: "GET", // Add method property
           },
         ],
@@ -78,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             return {
               id: uuid, // Generate a unique ID for each item
               title: operation.summary,
-              url: `api-${uuid}`,
+              url: `?api=${uuid}`,
               method: method.toUpperCase(),
               operationId: operation.operationId,
             };
