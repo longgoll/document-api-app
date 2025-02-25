@@ -22,6 +22,7 @@ function ContentHome() {
   const apiPath = queryParams.get("api");
 
   const apiInfo = apiPath
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? (medusaOpenApi.paths as Record<string, any>)[apiPath]
     : null;
 
