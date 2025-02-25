@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 
 // Import JSON file
-import medusaOpenApi from "../../docs/Medusa.openapi.json";
+import medusaOpenApi from "../../docs/openApi/Medusa.openapi.json";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [dataNav, setDataNav] = React.useState({
