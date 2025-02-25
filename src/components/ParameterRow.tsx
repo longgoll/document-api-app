@@ -3,13 +3,13 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Parameter = {
-    name: string;
-    type: string;
-    required: boolean;
-    description: string;
-    children?: Parameter[];
-    example?: string;
-  };
+  name: string;
+  type: string;
+  required: boolean;
+  description: string;
+  children?: Parameter[];
+  example?: string;
+};
 
 function ParameterRow({
   parameter,
@@ -42,9 +42,11 @@ function ParameterRow({
           </button>
         )}
         <div className="flex-1 space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-blue-500">{parameter.name}</span>
-            <span className="text-sm text-slate-600">{parameter.type}</span>
+          <div className="flex items-center gap-2 justify-between">
+            <span className="flex items-center gap-2">
+              <span className="text-blue-500">{parameter.name}</span>
+              <span className="text-sm text-slate-600">{parameter.type}</span>
+            </span>
             {parameter.required ? (
               <span className="text-orange-500 text-sm">required</span>
             ) : (
