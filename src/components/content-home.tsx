@@ -22,7 +22,6 @@ function ContentHome() {
   const apiPath = queryParams.get("api");
 
   const apiInfo = apiPath
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? (medusaOpenApi.paths as Record<string, any>)[apiPath]
     : null;
 
@@ -110,14 +109,11 @@ function ContentHome() {
                 ⌘ Run in Apidog
               </Button>
             </div>
-            {/* Description */}
           </div>
           <p className="text-slate-600 dark:text-slate-400">
             {apiInfo.post.description}
           </p>
-          {/* Endpoint Header */}
 
-          {/* Request Section */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Request</h2>
 
@@ -149,7 +145,7 @@ function ContentHome() {
                   </Button>
                 </div>
                 <div className="bg-slate-900 rounded-lg p-4">
-                  <pre className="text-slate-50 text-sm">
+                  <pre className="text-sm text-slate-500">
                     {`{
   "region_id": "string",
   "sales_channel_id": "string",
@@ -170,7 +166,6 @@ function ContentHome() {
               </div>
             </div>
 
-            {/* Request Samples */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">Request samples</h2>
               <Tabs defaultValue="javascript" className="w-full">
@@ -188,11 +183,10 @@ function ContentHome() {
                     </div>
                     JavaScript
                   </TabsTrigger>
-                  {/* Add other language tabs as needed */}
                 </TabsList>
                 <TabsContent value="javascript">
                   <div className="bg-[#1B1F23] rounded-lg p-4 mt-2">
-                    <pre className="text-slate-50 text-sm font-mono">
+                    <pre className="text-sm text-slate-500">
                       {codeExample}
                     </pre>
                   </div>
