@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ChevronRight } from "lucide-react";
 import { v4 as uuidv4 } from "uuid"; // Import uuid
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 import { SearchForm } from "@/components/search-form";
 import { VersionSwitcher } from "@/components/version-switcher";
@@ -40,7 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             method: "GET", // Add method property
           },
           {
-            "id": "2",
+            id: "2",
             title: "Project Structure",
             url: "#",
             method: "GET", // Add method property
@@ -77,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             return {
               id: uuid, // Generate a unique ID for each item
               title: operation.summary,
-              url: `#${operation.operationId}-${uuid}`,
+              url: `api-${uuid}`,
               method: method.toUpperCase(),
               operationId: operation.operationId,
             };
@@ -138,8 +139,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     {item.items.map((subItem) => (
                       <SidebarMenuItem key={subItem.id}>
                         <SidebarMenuButton asChild isActive={false}>
-                          <a
-                            href={subItem.url}
+                          <Link
+                            to={subItem.url}
                             className="flex justify-between items-center px-4 py-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
                           >
                             <span>{subItem.title}</span>
@@ -164,7 +165,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             >
                               {subItem.method}
                             </span>
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
